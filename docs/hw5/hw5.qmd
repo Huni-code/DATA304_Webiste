@@ -1,3 +1,6 @@
+
+[Home](../)
+
 ---
 title: "HW 5"
 format:
@@ -33,3 +36,74 @@ There are two features I would like to implement which are:
 **Are there any features of the graphic that you would not know how to do in Vega-Lite? If so, list them.**
 
 None
+
+## Exercise 3
+
+**Graph 1.1**
+```{r}
+library(vegawidget)
+spec <- list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v6.json",
+  width =600,
+  length = 800,
+  data = list(url = "https://calvin-data304.netlify.app/data/weather-with-dates.csv"),
+  mark = "bar",
+  encoding = list(
+    x = list(field = "date", type = "temporal", timeUnit = "month", title = "Month"),
+    y = list(field = "temp_max", type = "quantitative", aggregate = "mean", title = "Mean Temperature")
+  )
+)
+as_vegaspec(spec)
+```
+
+**Graph 1.2**
+```{r}
+spec2 <- list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v6.json",
+  width =600,
+  length = 800,
+  data = list(url = "https://calvin-data304.netlify.app/data/weather-with-dates.csv"),
+  params = list(
+    list(
+      name = "year_selection",
+      value = 2012,
+      bind = list(
+        input = "select",
+        options = list(2012, 2013, 2014, 2015),
+        name = "Select Year: "
+      )
+    )
+  ),
+  transform = list(
+    list(calculate = "year(datum.date)", as = "year"),
+    list(filter = "datum.year == year_selection")
+  ),
+  mark = "bar",
+  encoding = list(
+    x = list(field = "date", type = "temporal", timeUnit = "month", title = "Month"),
+    y = list(field = "temp_max", type = "quantitative", aggregate = "mean", title = "Mean Temperature")
+  )
+)
+as_vegaspec(spec2)
+```
+
+**Graph 2**
+
+```{r}
+spec3 <- list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v6.json",
+  width = 600,
+  height = 400,
+  data = list(url = "https://calvin-data304.netlify.app/data/weather-with-dates.csv"),
+  transform = list(
+    list(calculate = "month(datum.date) + 1", as = "month_num")
+  ),
+  mark = "bar",
+  encoding = list(
+    x = list(field = "month_num", type = "ordinal", title = "Month"),
+    y = list(aggregate = "count", title = "Number of Days"),
+    color = list(field = "weather", type = "nominal", title = "Weather Type")
+  )
+)
+as_vegaspec(spec3)
+```

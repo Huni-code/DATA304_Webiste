@@ -1,3 +1,5 @@
+[Home](../)
+
 ---
 title: "HW 6"
 format:
