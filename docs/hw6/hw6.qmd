@@ -8,7 +8,7 @@ format:
 embed-resources: true
 ---
 
-**1. 
+**Exercise 1. 
 a) What is the most interesting lesson, guide, or piece of advice Tufte offers you in this chapter?**
 
 In the Reading, Tufte emphasizes on how graphics can display what numbers alone cannot. It gives a clear story and a purpose with the graphics. From John Snow's cholera map to Marey's train schedule, It answers questions and revealing something new.
@@ -31,3 +31,60 @@ Intersection of two lines = The exact time and place where two trains traveling 
 The y axis segments setting it proportionally will be very hard for me to do it manually.
 
 Tufte's point: Every visual elemten has a purpose, and nothing is decorative. "complex ideas communicated with clarity, precision, and efficiency"
+
+**Exercise 2**
+I learned the importance of iterating through different visualizations with the same data. Each types of visualization reveals somethings different. 
+
+It was surprising to learn that pie charts are not an effective visualization type. Since they are so widely used in news and articles, I had always assumed they were a reliable way to present data. However, Knaflic explains that our eyes struggle to accurately compare areas, making it difficult to tell which segment is bigger when the sizes are similar.
+
+**Exercise 3**
+STEP 1. 
+-Bar charts should start at zero baseline. This chart starts at 50%
+-Too many data labels and they look cluttered.
+-Two different visualization type is combined (line & bar chart) which is hard to interpret what the visualization is trying to show.
+
+STEP 2.
+-Start y axis baseline at 0%
+-minimize the data labels, leaving out the only important features
+-use one visualization type only to present important information
+
+STEP 3.
+
+```{r}
+library(vegawidget)
+graph <- list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v6.json",
+  width = 700,
+  height= 200,
+  data = list(values = list(
+    list(Date = "Q1-2017", `Completion Rate` = 0.91, `Response Rate` = 0.023),
+    list(Date = "Q2-2017", `Completion Rate` = 0.93, `Response Rate` = 0.018),
+    list(Date = "Q3-2017", `Completion Rate` = 0.91, `Response Rate` = 0.028),
+    list(Date = "Q4-2017", `Completion Rate` = 0.89, `Response Rate` = 0.023),
+    list(Date = "Q1-2018", `Completion Rate` = 0.84, `Response Rate` = 0.034),
+    list(Date = "Q2-2018", `Completion Rate` = 0.88, `Response Rate` = 0.027),
+    list(Date = "Q3-2018", `Completion Rate` = 0.91, `Response Rate` = 0.026),
+    list(Date = "Q4-2018", `Completion Rate` = 0.87, `Response Rate` = 0.039),
+    list(Date = "Q1-2019", `Completion Rate` = 0.83, `Response Rate` = 0.028)
+  )),
+  vconcat = list(
+    list(
+      title = "Completion Rate Over Time",
+      mark = "line",
+      encoding = list(
+        x = list(field = "Date", type = "ordinal"),
+        y = list(field = "Completion Rate", type = "quantitative")
+      )
+    ),
+    list(
+      title = "Response Rate Over Time",
+      mark = "line",
+      encoding = list(
+        x = list(field = "Date", type = "ordinal"),
+        y = list(field = "Response Rate", type = "quantitative")
+      )
+    )
+  )
+)
+as_vegaspec(graph)
+```
