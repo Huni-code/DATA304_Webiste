@@ -165,7 +165,7 @@ dvs = {
 }
 ```
 
-I decided to do challenge #5 using a dataset from the Data Visualization Society survey. I made a stacked bar chart to compare time consumption among employees with different years of experience. Most people use 5 hours or less per task, but "Producing Viz" has the highest proportion. As professionals get more experience, more time goes toward "Managing Data Viz". I selected five time-related columns and converted them to long format using a fold transform. I filtered out any empty or NA responses. I divided into four groups for Years of Experience to make it readable.
+I decided to do challenge #5 using a dataset from the Data Visualization Society survey. I made a stacked bar chart to compare time consumption among employees with different years of experience. Most people use 5 hours or less per task. As professionals get more experience, more time goes toward "Managing Data Viz". I selected five time-related columns and converted them to long format using a fold transform. I filtered out any empty or NA responses. I divided into four groups for Years of Experience to make it readable.
 
 ## Exercise 3
 
