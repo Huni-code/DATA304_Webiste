@@ -1,0 +1,187 @@
+[Home](../)
+
+---
+title: "HW 7"
+format:
+  html:
+    output-file: "index"
+    code-tools: true
+    include-in-header:
+      text: |
+        <script>
+          if (window.define) { delete window.define.amd; }
+        </script>
+embed-resources: true
+---
+
+## Exercise 1
+```{python}
+#| code-fold: true
+
+import altair as alt
+import pandas as pd
+
+url = "https://calvin-data304.netlify.app/data/swd-lets-practice-ex-2-3.csv"
+df = pd.read_csv(url)
+df["capacity"] = df["capacity"].str.replace(",", "").astype(int)
+df["demand"] = df["demand"].str.replace(",", "").astype(int)
+df["date"] = pd.to_datetime(df["date"])
+
+long = df.melt(id_vars="date", value_vars=["capacity", "demand"],
+               var_name="type", value_name="value")
+
+df2 = df.copy()
+df2["unmet"] = df2["demand"] - df2["capacity"]
+```
+
+### 1. Grouped Bar
+```{python}
+#| code-fold: true
+
+chart1 = alt.Chart(long).mark_bar().encode(
+    x=alt.X("yearmonth(date):T", title="Month"),
+    y=alt.Y("value:Q", title="Value"),
+    color="type:N",
+    xOffset="type:N"
+).properties(width=400, height=200, title="Demand vs Capacity Grouped Bar")
+
+chart1
+```
+
+### 2. Line Chart
+```{python}
+#| code-fold: true
+
+chart2 = alt.Chart(long).mark_line(point=False).encode(
+    x=alt.X("date:T", title="Month"),
+    y=alt.Y("value:Q", title="Value"),
+    color=alt.Color("type:N", title="Type")
+).properties(width=400, height=200, title="Demand vs Capacity Line")
+
+chart2
+```
+
+### 3. Overlapping Bars
+```{python}
+#| code-fold: true
+
+demand_bars = alt.Chart(df).mark_bar(opacity=0.4, color="blue", width=20).encode(
+    x=alt.X("date:T", title="Month"),
+    y=alt.Y("demand:Q", title="Value")
+)
+
+cap_bars = alt.Chart(df).mark_bar(color="lightblue", width=12).encode(
+    x="date:T",
+    y="capacity:Q"
+)
+
+chart3 = (demand_bars + cap_bars).properties(width=400, height=200, title="Demand vs Capacity Overlapped")
+
+chart3
+```
+
+### 4. Stacked Bar
+```{python}
+#| code-fold: true
+
+stacked = df2.melt(id_vars="date", value_vars=["capacity", "unmet"],
+                   var_name="type", value_name="value")
+
+chart4 = alt.Chart(stacked).mark_bar().encode(
+    x=alt.X("date:T", title="Month"),
+    y=alt.Y("value:Q", title="Value", stack=True),
+    color=alt.Color("type:N", title="Type")
+).properties(width=400, height=200, title="Capacity + Unmet Demand")
+
+chart4
+```
+
+### 5. Connected Dot
+```{python}
+#| code-fold: true
+
+rules = alt.Chart(df).mark_rule().encode(
+    x="date:T",
+    y="capacity:Q",
+    y2="demand:Q"
+)
+
+cap_pts = alt.Chart(df).mark_point(filled=True, size=60, color="steelblue").encode(
+    x="date:T",
+    y="capacity:Q"
+)
+
+dem_pts = alt.Chart(df).mark_point(filled=True, size=60, color="orange").encode(
+    x="date:T",
+    y="demand:Q"
+)
+
+chart5 = (rules + cap_pts + dem_pts).properties(width=400, height=200, title="Demand vs Capacity")
+
+chart5
+```
+
+### 6. Demand Line
+```{python}
+#| code-fold: true
+
+dem_line = alt.Chart(df2).mark_line(color="steelblue", point=True).encode(
+    x="date:T",
+    y="demand:Q"
+)
+
+chart6 = (dem_line).properties(width=400, height=200, title="Unmet Demand")
+
+chart6
+```
+
+
+## a.
+```{python}
+#| code-fold: true
+jobs_url = "https://cdn.jsdelivr.net/npm/vega-datasets@2.8.0/data/jobs.json"
+jobs = pd.read_json(jobs_url)
+
+alt.Chart(jobs_url).mark_line(point=True).encode(
+    x="year:O",
+    y="sum(perc):Q",
+    color="sex:N"
+).properties(width=400, height=200, title="Sum of perc by Year and Sex")
+```
+
+The sum of perc for men and women is close to 1.0 each year. This would mean that perc is the proportion of the total population working in the job.
+
+## b. Scatterplot with 4 year facets
+```{python}
+#| code-fold: true
+
+alt.Chart(jobs_url).transform_filter(
+    "datum.year == 1850 || datum.year == 1950 || datum.year == 1980 || datum.year == 2000"
+).transform_pivot(
+    "sex", groupby=["job", "year"], value="perc"
+).mark_point().encode(
+    x=alt.X("men:Q", title="Men", axis=alt.Axis(format=".0%")),
+    y=alt.Y("women:Q", title="Women", axis=alt.Axis(format=".0%")),
+    tooltip=["job:N", "men:Q", "women:Q"],
+    column="year:O"
+).properties(width=200, height=200)
+```
+
+### c. Percentage within each sex
+```{python}
+#| code-fold: true
+
+filtered = jobs[jobs["year"].isin([1850, 1950, 1980, 2000])].copy()
+totals = filtered.groupby(["year", "sex"])["count"].transform("sum")
+filtered["pct"] = filtered["count"] / totals
+
+alt.Chart(filtered).transform_pivot(
+    "sex", groupby=["job", "year"], value="pct"
+).mark_point().encode(
+    x=alt.X("men:Q", title="% of Men", axis=alt.Axis(format=".0%")),
+    y=alt.Y("women:Q", title="% of Women", axis=alt.Axis(format=".0%")),
+    tooltip=["job:N", "men:Q", "women:Q"],
+    column="year:O"
+).properties(width=200, height=200)
+```
+

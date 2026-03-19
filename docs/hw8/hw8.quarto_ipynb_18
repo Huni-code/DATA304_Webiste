@@ -1,0 +1,52 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"HW 7\"\n",
+        "format:\n",
+        "  html:\n",
+        "    output-file: \"index\"\n",
+        "    code-tools: true\n",
+        "embed-resources: true\n",
+        "execute:\n",
+        "  enabled: true\n",
+        "  freeze: auto\n",
+        "---"
+      ],
+      "id": "7d183003"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import altair as alt\n",
+        "import pandas as pd\n",
+        "\n",
+        "# 데이터 생성\n",
+        "data = pd.DataFrame({\"x\": [1, 2, 3], \"y\": [4, 5, 6]})\n",
+        "\n",
+        "# 차트 생성 (변수에 담지 않고 바로 실행하거나 마지막에 변수명만 작성)\n",
+        "alt.Chart(data).mark_point().encode(\n",
+        "    x='x',\n",
+        "    y='y'\n",
+        ")"
+      ],
+      "id": "14f458f2",
+      "execution_count": null,
+      "outputs": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "C:\\Users\\aa\\AppData\\Local\\Programs\\Python\\Python313\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

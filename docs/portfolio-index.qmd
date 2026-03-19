@@ -5,7 +5,6 @@ format:
     output-file: "index"
 embed-resources: true
 ---
-I’m all set.
 
 ## Assignments
 
@@ -14,3 +13,7 @@ I’m all set.
 [HW 6](hw6/)
 
 [HW 7](hw7/)
+
+[HW 8](hw8/)
+
+[Final Portfolio](Final_Portfolio/)

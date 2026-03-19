@@ -1,0 +1,238 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"HW 7\"\n",
+        "format:\n",
+        "  html:\n",
+        "    output-file: \"index\"\n",
+        "    code-tools: true\n",
+        "embed-resources: true\n",
+        "---\n",
+        "\n",
+        "[Home](../)\n",
+        "\n",
+        "## Exercise 1: Supply and Demand"
+      ],
+      "id": "daf5b064"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| code-fold: true\n",
+        "\n",
+        "import altair as alt\n",
+        "import pandas as pd\n",
+        "\n",
+        "url = \"https://calvin-data304.netlify.app/data/swd-lets-practice-ex-2-3.csv\"\n",
+        "df = pd.read_csv(url)\n",
+        "df[\"capacity\"] = df[\"capacity\"].str.replace(\",\", \"\").astype(int)\n",
+        "df[\"demand\"] = df[\"demand\"].str.replace(\",\", \"\").astype(int)\n",
+        "df[\"date\"] = pd.to_datetime(df[\"date\"])\n",
+        "\n",
+        "long = df.melt(id_vars=\"date\", value_vars=[\"capacity\", \"demand\"],\n",
+        "               var_name=\"type\", value_name=\"value\")\n",
+        "\n",
+        "base = alt.Chart(long).encode(\n",
+        "    x=alt.X(\"date:T\", title=\"Month\"),\n",
+        "    color=alt.Color(\"type:N\", title=\"Type\")\n",
+        ").properties(width=400, height=200)"
+      ],
+      "id": "6b128107",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### 1. Grouped Bar"
+      ],
+      "id": "17da86ea"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| code-fold: true\n",
+        "\n",
+        "alt.Chart(long).mark_bar().encode(\n",
+        "    x=alt.X(\"yearmonth(date):T\", title=\"Month\"),\n",
+        "    y=alt.Y(\"value:Q\", title=\"Value\"),\n",
+        "    color=\"type:N\",\n",
+        "    xOffset=\"type:N\"\n",
+        ").properties(width=400, height=200, title=\"Grouped Bar\")"
+      ],
+      "id": "4dda8441",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### 2. Line Chart"
+      ],
+      "id": "dd04ee49"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| code-fold: true\n",
+        "\n",
+        "base.mark_line(point=True).encode(\n",
+        "    y=alt.Y(\"value:Q\", title=\"Value\")\n",
+        ").properties(title=\"Line Chart\")"
+      ],
+      "id": "af9c3182",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### 3. Bar + Line Combo"
+      ],
+      "id": "ffe835e3"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| code-fold: true\n",
+        "\n",
+        "bars = alt.Chart(df).mark_bar(color=\"steelblue\", opacity=0.6).encode(\n",
+        "    x=alt.X(\"date:T\", title=\"Month\"),\n",
+        "    y=alt.Y(\"capacity:Q\", title=\"Value\")\n",
+        ")\n",
+        "\n",
+        "line = alt.Chart(df).mark_line(color=\"orange\", point=True).encode(\n",
+        "    x=\"date:T\",\n",
+        "    y=\"demand:Q\"\n",
+        ")\n",
+        "\n",
+        "(bars + line).properties(width=400, height=200, title=\"Bar (Capacity) + Line (Demand)\")"
+      ],
+      "id": "718227df",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### 4. Stacked Bar (Capacity + Unmet Demand)"
+      ],
+      "id": "9278cf6f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| code-fold: true\n",
+        "\n",
+        "df2 = df.copy()\n",
+        "df2[\"unmet\"] = df2[\"demand\"] - df2[\"capacity\"]\n",
+        "stacked = df2.melt(id_vars=\"date\", value_vars=[\"capacity\", \"unmet\"],\n",
+        "                   var_name=\"type\", value_name=\"value\")\n",
+        "\n",
+        "alt.Chart(stacked).mark_bar().encode(\n",
+        "    x=alt.X(\"date:T\", title=\"Month\"),\n",
+        "    y=alt.Y(\"value:Q\", title=\"Value\", stack=True),\n",
+        "    color=alt.Color(\"type:N\", title=\"Type\")\n",
+        ").properties(width=400, height=200, title=\"Stacked: Capacity + Unmet Demand\")"
+      ],
+      "id": "d0b76065",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### 5. Connected Dot (Lollipop)"
+      ],
+      "id": "680fd174"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| code-fold: true\n",
+        "\n",
+        "rules = alt.Chart(df).mark_rule().encode(\n",
+        "    x=\"date:T\",\n",
+        "    y=\"capacity:Q\",\n",
+        "    y2=\"demand:Q\"\n",
+        ")\n",
+        "\n",
+        "cap_pts = alt.Chart(df).mark_point(filled=True, size=60, color=\"steelblue\").encode(\n",
+        "    x=\"date:T\",\n",
+        "    y=\"capacity:Q\"\n",
+        ")\n",
+        "\n",
+        "dem_pts = alt.Chart(df).mark_point(filled=True, size=60, color=\"orange\").encode(\n",
+        "    x=\"date:T\",\n",
+        "    y=\"demand:Q\"\n",
+        ")\n",
+        "\n",
+        "(rules + cap_pts + dem_pts).properties(width=400, height=200, title=\"Connected Dots: Demand vs Capacity\")"
+      ],
+      "id": "5f03c9a7",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### 6. Area (Unmet Demand)"
+      ],
+      "id": "a770eda1"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| code-fold: true\n",
+        "\n",
+        "area = alt.Chart(df).mark_area(opacity=0.3, color=\"orange\").encode(\n",
+        "    x=\"date:T\",\n",
+        "    y=\"capacity:Q\",\n",
+        "    y2=\"demand:Q\"\n",
+        ")\n",
+        "\n",
+        "cap_line = alt.Chart(df).mark_line(color=\"steelblue\").encode(\n",
+        "    x=\"date:T\",\n",
+        "    y=alt.Y(\"capacity:Q\", title=\"Value\")\n",
+        ")\n",
+        "\n",
+        "dem_line = alt.Chart(df).mark_line(color=\"orange\").encode(\n",
+        "    x=\"date:T\",\n",
+        "    y=\"demand:Q\"\n",
+        ")\n",
+        "\n",
+        "(area + cap_line + dem_line).properties(width=400, height=200, title=\"Area: Unmet Demand Gap\")"
+      ],
+      "id": "de641eb6",
+      "execution_count": null,
+      "outputs": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "C:\\Users\\aa\\AppData\\Local\\Programs\\Python\\Python313\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
