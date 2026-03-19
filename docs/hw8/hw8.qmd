@@ -136,7 +136,7 @@ chart6
 ```
 
 
-## a.
+## Exercise 2
 ```{python}
 #| code-fold: true
 jobs_url = "https://cdn.jsdelivr.net/npm/vega-datasets@2.8.0/data/jobs.json"
