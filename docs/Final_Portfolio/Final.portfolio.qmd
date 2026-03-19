@@ -122,7 +122,7 @@ twins = {
 }
 ```
 
-**Graph: 2** I tried making heatmap for the first time, with reference to the [Layering text over heatmap](https://vega.github.io/vega-lite/examples/layer_text_heatmap.html) Vega-Lite Gallery. This heat map shows avg genetic share over all 3 kits for each twin, positioned by different region. Both Twin A and B are aligned side by side to perceptually compare easily. The color patterns show that twins receive pretty consistent acestry estimates. The largest difference is at SE Europe, 0.25 <> 0.21 which is not a significant difference.
+**Graph: 2** I tried making heatmap, with reference to the [Layering text over heatmap](https://vega.github.io/vega-lite/examples/layer_text_heatmap.html) Vega-Lite Gallery. This heat map shows avg genetic share over all 3 kits for each twin, positioned by different region. Both Twin A and B are aligned side by side to perceptually compare easily. The color patterns show that twins receive pretty consistent acestry estimates. The largest difference is at SE Europe, 0.25 <> 0.21 which is not a significant difference.
 
 ## Exercise 2
 
